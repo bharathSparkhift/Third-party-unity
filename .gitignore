@@ -84,3 +84,5 @@ crashlytics-build.properties
 # Exceptions for specific files to be tracked by Git LFS
 !Assets/Firebase/Plugins/x86_64/FirebaseCppApp-12_0_0.bundle
 !Assets/Firebase/Plugins/x86_64/FirebaseCppApp-12_0_0.so
+
+/Keystoremanager/
