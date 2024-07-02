@@ -202,6 +202,7 @@ GameObject:
   - component: {fileID: 156689307}
   - component: {fileID: 156689308}
   - component: {fileID: 156689309}
+  - component: {fileID: 156689310}
   m_Layer: 0
   m_Name: '[Firebase Scripts]'
   m_TagString: Untagged
@@ -249,6 +250,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 08caf5d3211babe46a03f03d8737beed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &156689310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 156689306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6580b1810e2c13549bec784ca487f2b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &158662157

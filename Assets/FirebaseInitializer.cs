@@ -13,7 +13,6 @@ public class FirebaseInitializer : MonoBehaviour
 {
     [SerializeField] TMP_Text outPutStatus;
     [SerializeField] private TMP_InputField firebaseTokenOnReceivedText;
-    [SerializeField] string mail;
 
 
     private void Awake()
@@ -40,6 +39,7 @@ public class FirebaseInitializer : MonoBehaviour
             if (task.Result == Firebase.DependencyStatus.Available)
             {
                 InitializeAnalytics();
+                FirebaseHandler.OnFirebaseDelegateInvoked?.Invoke();  
                 outPutStatus.text += $"<color=green>{task.Result}</color>";
             }
             else
@@ -81,7 +81,7 @@ public class FirebaseInitializer : MonoBehaviour
     void InitializeAnalytics()
     {
         FirebaseAnalytics.SetAnalyticsCollectionEnabled(true);
-        outPutStatus.text += $"<color=green>{nameof(InitializeAnalytics)}</color>";
+        outPutStatus.text += $"<color=green>Firebase analytics initialized</color>";
     }
 
    
