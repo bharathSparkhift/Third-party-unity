@@ -15,7 +15,7 @@ public class AnalyticsHandler
         Debug.Log($"<color=blue>{nameof(SceneLoadViews)}</color>");
     }
     
-    public void AnalyticsLogin()
+    public void LoginEvent()
     {
         
     }
@@ -44,12 +44,12 @@ public class FirebaseHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        analyticsHandler = new AnalyticsHandler();
     }
 
     async void InvokeAnalytics()
     {
-        analyticsHandler = new AnalyticsHandler();
+        
         await Task.Delay(1000);
         string value = GetPlayerPrefsValue(SceneManager.GetActiveScene().name);
         double count;
