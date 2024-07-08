@@ -1,5 +1,6 @@
 # Third-party-unity
 
-Google sign in
-Firebase Cloud Messaging
-Google analytics
+Google sign in |
+Firebase Cloud Messaging |
+Google analytics |
+Gamepad
