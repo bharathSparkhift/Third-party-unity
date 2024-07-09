@@ -1,21 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class DeepLinkeHandler : MonoBehaviour
 {
 
-    // [SerializeField] Button deepLinkButton;
 
     private void OnEnable()
     {
-        // deepLinkButton.onClick.AddListener( (Application.absoluteURL) = OnDeepLinkButtonClicked );
+
     }
 
     private void OnDisable()
     {
-        // deepLinkButton.onClick.RemoveAllListeners();
+
     }
 
     // Start is called before the first frame update
@@ -26,10 +26,29 @@ public class DeepLinkeHandler : MonoBehaviour
 
     public void OnDeepLinkButtonClicked(string url)
     {
-        if (url.Contains("google.com"))
+        // Update DeepLink Manager global variable, so URL can be accessed from anywhere.
+        // deeplinkURL = url;
+
+        // Decode the URL to determine action. 
+        // In this example, the application expects a link formatted like this:
+        // unitydl://mylink?scene1
+        // http://thirdparty?Thirdparty
+        string sceneName = url.Split('?')[1];
+        bool validScene;
+        switch (sceneName)
         {
-            Application.OpenURL($"{Application.absoluteURL}");  // https://www.google.com
-            Debug.Log($"{nameof(OnDeepLinkButtonClicked)} \t");
+            case "scene1":
+                validScene = true;
+                break;
+            case "scene2":
+                validScene = true;
+                break;
+            default:
+                validScene = false;
+                break;
         }
+        if (validScene) SceneManager.LoadScene(sceneName);
+
+        Debug.Log($"{nameof(OnDeepLinkButtonClicked)}");
     }
 }
