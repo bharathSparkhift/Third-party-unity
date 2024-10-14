@@ -14,19 +14,19 @@ using Unity.VisualScripting;
 using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
-//using Firebase.Extensions;
+// using Firebase.Extensions;
 
 namespace LobbyInGameUi
 {
 
-    [Serializable]
+    /*[Serializable]
     public class FirebaseNotificationListWrapper
     {
-        public List<FirebaseNotificationMessageData> notifications = new List<FirebaseNotificationMessageData>();
+        // public List<FirebaseNotificationMessageData> notifications = new List<FirebaseNotificationMessageData>();
 
-    }
+    }*/
 
-    [Serializable]
+    /*[Serializable]
     public class FirebaseNotificationMessageData
     {
         public string MessageId;
@@ -39,7 +39,7 @@ namespace LobbyInGameUi
         {
             return $"Message Id \t {MessageId} \n  Title \t {Title} \n Body \t {Body} \n Message Delivered Date Time \t {MessagedeliveredDateTime} \n Message Deleting Date Time \t {MessageTobeDeletedDateTime}";
         }
-    }
+    }*/
 
 
 
@@ -47,14 +47,13 @@ namespace LobbyInGameUi
     {
 
         [SerializeField] Transform notificationPanelParentTransform;
-        [SerializeField] NotificationPanelWeb3_0 notificationPanel;
+        // [SerializeField] NotificationPanelWeb3_0 notificationPanel;
         [SerializeField] TMP_Text output;
 
 
         #region Private fields
-        string FirebaseDataFilePath => Application.persistentDataPath + "/FirebaseData.txt";
+        string FirebaseNotification_FilePath => Application.persistentDataPath + "/FirebaseData.json";
         bool _notificationPanelInstantiated = false;
-        FirebaseNotificationListWrapper firebaseNotificationListWrapper;
         List<NotificationPanelWeb3_0> notificationPool = new List<NotificationPanelWeb3_0>();
         #endregion
 
@@ -62,9 +61,25 @@ namespace LobbyInGameUi
         private void Awake()
         {
 
-            firebaseNotificationListWrapper = new FirebaseNotificationListWrapper();
+            // firebaseNotificationListWrapper = new FirebaseNotificationListWrapper();
         }
 
+        [ContextMenu("Application Persistant Data Path")]
+        public void Get_Application_Persistant()
+        {
+            Debug.Log($"{Application.persistentDataPath}");
+            // FireBaseNotificationHandler fireBaseNotificationHandler = new FireBaseNotificationHandler();
+            //fireBaseNotificationHandler.ReadMessageFromJsonFile();
+            /*List<NotificationMessage> allNotificationMessages = fireBaseNotificationHandler.UpdateNotificationMessage();
+            foreach(var notification in allNotificationMessages)
+            {
+                Debug.Log(notification.ToString());
+            }*/
+        }
+
+
+        // NotificationMessage notification_Message;
+        //FireBaseNotificationHandler fireBaseNotificationHandler;
 
         private void Start()
         { 
@@ -72,7 +87,6 @@ namespace LobbyInGameUi
             Debug.Log("Initializing firebase...");
             Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
             {
-                // var dependencyStatus = task.Result;
                 if (task.Result == Firebase.DependencyStatus.Available)
                 {
                     Debug.Log("Firebase initialized successfully!");
@@ -81,9 +95,9 @@ namespace LobbyInGameUi
                     // InstantiateNotificationPanel();
 
                     // Check for file
-                    if (!File.Exists(FirebaseDataFilePath))
+                    if (!File.Exists(FirebaseNotification_FilePath))
                     {
-                        File.Create(FirebaseDataFilePath);
+                        File.Create(FirebaseNotification_FilePath);
                         output.text += "\n<color=green>New file created....</color>";
                         Debug.Log("New file created....");
                     }
@@ -91,6 +105,11 @@ namespace LobbyInGameUi
                     {
                         FetchNotificationsFromFile();
                     }*/
+
+                    
+                    // notification_Message = new NotificationMessage();
+                    //fireBaseNotificationHandler = new FireBaseNotificationHandler();
+                    Firebase.Messaging.FirebaseMessaging.TokenReceived += OnTokenReceived;
                     InitializeFirebaseCloudMessaging();
                     InitializeFirebaseAnalytics();
        
@@ -108,16 +127,22 @@ namespace LobbyInGameUi
 
         private void OnEnable()
         {
-            FetchNotificationsFromFile();
+            // FetchNotificationsFromFile();
         }
 
+
+        
+
+        /// <summary>
+        /// Initialize the Firebase cloud messaging.
+        /// </summary>
+        /// <returns></returns>
         private bool InitializeFirebaseCloudMessaging()
         {
 
             bool out_ = false;
 
-            Firebase.Messaging.FirebaseMessaging.TokenReceived += OnTokenReceived;
-            Firebase.Messaging.FirebaseMessaging.MessageReceived += OnMessageReceived;
+            
 
             Debug.Log($"{nameof(InitializeFirebaseCloudMessaging)}");
 
@@ -129,6 +154,8 @@ namespace LobbyInGameUi
                     {
                         Debug.Log("Messaging permission granted");
                         output.text = $"<color=green>Messaging permission granted</color>";
+                        // FireBaseNotificationHandler fireBaseNotificationHandler = new FireBaseNotificationHandler();
+                        Firebase.Messaging.FirebaseMessaging.MessageReceived += OnMessageReceived;
                         return true;
                     }
                     else
@@ -171,6 +198,8 @@ namespace LobbyInGameUi
                 output.text = $"<color=red>{ex.Message}</color>";
             }
         }
+
+        FireBaseNotificationHandler fireBaseNotificationHandler;
        
         /// <summary>
         /// Firebase message callbacks event.
@@ -182,26 +211,36 @@ namespace LobbyInGameUi
         {
             Debug.Log($"Received remote message: {JsonConvert.SerializeObject(e)} \n Message type {e.Message.MessageType}");
 
-            FirebaseNotificationMessageData firebaseNotificationMessageData = new FirebaseNotificationMessageData();
+            // FirebaseNotificationMessageData firebaseNotificationMessageData = new FirebaseNotificationMessageData();
 
-            firebaseNotificationMessageData.MessageId = e.Message.MessageId;
-            firebaseNotificationMessageData.Title = e.Message.Data["title"];
-            firebaseNotificationMessageData.Body = e.Message.Data["body"];
-            firebaseNotificationMessageData.Img = e.Message.Data["img"];
-            firebaseNotificationMessageData.MessagedeliveredDateTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ");
-            firebaseNotificationMessageData.MessageTobeDeletedDateTime = DateTime.Now.AddMinutes(4).ToString($"yyyy-MM-ddTHH:mm:ssZ");
+            var MessageId = e.Message.MessageId;
+            var Title = e.Message.Data["title"];
+            var Body = e.Message.Data["body"];
+            var Img = e.Message.Data["img"];
+            var MessagedeliveredDateTime = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ");
+            var MessageTobeDeletedDateTime = DateTime.Now.AddMinutes(4).ToString($"yyyy-MM-ddTHH:mm:ssZ");
+
+            fireBaseNotificationHandler = new FireBaseNotificationHandler();
+            fireBaseNotificationHandler.WriteDataToFile(new NotificationData()
+            {
+                title = Title,
+                body = Body,
+                img = Img,
+                receivedData = MessagedeliveredDateTime,
+            });
+
+            /* notification_Message = new NotificationMessage(Title, Body, Img, MessagedeliveredDateTime);
+            fireBaseNotificationHandler.UpdateNotificationMessage(notification_Message);*/
+
+            // firebaseNotificationListWrapper.notifications.Add(firebaseNotificationMessageData);
+            // string firebaseMessageJson = JsonUtility.ToJson(firebaseNotificationListWrapper, true);
 
             
+            // output.text = firebaseMessageJson;
 
-            firebaseNotificationListWrapper.notifications.Add(firebaseNotificationMessageData);
-            string firebaseMessageJson = JsonUtility.ToJson(firebaseNotificationListWrapper, true);
+            // File.WriteAllText(FirebaseDataFilePath, firebaseMessageJson);
 
-            
-            output.text = firebaseMessageJson;
-
-            File.WriteAllText(FirebaseDataFilePath, firebaseMessageJson);
-
-            FetchNotificationsFromFile();   
+            // FetchNotificationsFromFile();   
 
         }
 
@@ -211,19 +250,19 @@ namespace LobbyInGameUi
         public void ClearAllNotifications()
         {
             Debug.Log($"clear all notifications on button click");
-            firebaseNotificationListWrapper.notifications = null;
-            string firebaseMessageJson = JsonUtility.ToJson(firebaseNotificationListWrapper, true);
-            output.text = firebaseMessageJson;
-            File.WriteAllText(FirebaseDataFilePath, firebaseMessageJson);
+            // firebaseNotificationListWrapper.notifications = null;
+            // string firebaseMessageJson = JsonUtility.ToJson(firebaseNotificationListWrapper, true);
+            // output.text = firebaseMessageJson;
+            // File.WriteAllText(FirebaseDataFilePath, firebaseMessageJson);
 
-            FetchNotificationsFromFile();
+            // FetchNotificationsFromFile();
             
             
         }
 
 
 
-        void FetchNotificationsFromFile()
+        /*void FetchNotificationsFromFile()
         {
             if (!File.Exists(FirebaseDataFilePath))
                 return;
@@ -238,12 +277,12 @@ namespace LobbyInGameUi
 
                 if (notificationPanelParentTransform.childCount > 0)
                 {
-                    /*// notificationPanelParentTransform.Select(i => i)
+                    *//*// notificationPanelParentTransform.Select(i => i)
                     // Hide and reuse existing panels
                     foreach (Transform child in notificationPanelParentTransform)
                     {
                         child.gameObject.SetActive(false);
-                    }*/
+                    }*//*
 
                     notificationPanelParentTransform.Cast<Transform>().ToList().ForEach(child => { child.gameObject.SetActive(false); });
                     
@@ -277,12 +316,12 @@ namespace LobbyInGameUi
                 output.text = "<color=yellow>File is empty</color>";
                 firebaseNotificationListWrapper = new FirebaseNotificationListWrapper();
             }
-        }
+        }*/
 
-        void InstantiateNotificationPanel()
+        /*void InstantiateNotificationPanel()
         {
 
-            PlayerPrefs.GetString("FirebaseNotificationPanelInstantiated");
+            *//*PlayerPrefs.GetString("FirebaseNotificationPanelInstantiated");
 
             if (!_notificationPanelInstantiated)
             {
@@ -296,9 +335,9 @@ namespace LobbyInGameUi
                 _notificationPanelInstantiated = true;
             }
 
-            Debug.Log($"<color=green>Notification panel instantiated...</color>");
+            Debug.Log($"<color=green>Notification panel instantiated...</color>");*//*
             
-        }
+        }*/
     }
 }
 
